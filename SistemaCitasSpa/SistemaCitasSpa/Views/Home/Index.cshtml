@@ -1,8 +1,55 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Bienvenido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mt-5">
+    <h2 class="mb-4">¡Bienvenido al Sistema de Citas para Spa!</h2>
+
+    <p class="lead mb-4">
+        Esta plataforma le permitirá gestionar de forma eficiente todas las operaciones relacionadas con las citas,
+        pacientes, servicios y terapeutas de su centro de bienestar.
+    </p>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pacientes</h5>
+                    <p class="card-text">Administra los datos de tus clientes.</p>
+                    <a class="btn btn-primary" asp-controller="Pacientes" asp-action="Index">Ver Pacientes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Citas</h5>
+                    <p class="card-text">Organiza y controla todas las reservas.</p>
+                    <a class="btn btn-success" asp-controller="Citas" asp-action="Index">Ver Citas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Servicios</h5>
+                    <p class="card-text">Agrega o edita tratamientos ofrecidos.</p>
+                    <a class="btn btn-info" asp-controller="Servicios" asp-action="Index">Ver Servicios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Terapeutas</h5>
+                    <p class="card-text">Gestiona tu equipo de especialistas.</p>
+                    <a class="btn btn-warning text-white" asp-controller="Terapeutas" asp-action="Index">Ver Terapeutas</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
