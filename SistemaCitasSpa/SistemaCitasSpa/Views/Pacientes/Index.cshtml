@@ -1,0 +1,59 @@
+﻿@model IEnumerable<SistemaCitasSpa.Models.Paciente>
+
+@{
+    ViewBag.Title = "Lista de Pacientes";
+}
+
+<h2 class="text-center mb-4">Pacientes Registrados</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.Error
+    </div>
+}
+
+<p>
+    <a class="btn btn-success mb-3" href="/Paciente/Create">Registrar nuevo paciente</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark text-center">
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Fecha de Nacimiento</th>
+            <th style="width: 160px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center">No hay pacientes registrados.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var est in Model)
+            {
+                <tr>
+                    <td>@est.Nombre</td>
+                    <td>@est.Apellido</td>
+                    <td>@est.Telefono</td>
+                    <td>@est.Correo</td>
+                    <td>@(est.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "No registrada")</td>
+            
+                    <td>
+                        <a class="btn btn-sm btn-primary d-block mb-2" href="/Paciente/Edit?id=@est.PacienteID">Editar</a>
+                        <a class="btn btn-sm btn-info d-block mb-2" href="/Paciente/Details?id=@est.PacienteID">Detalles</a>
+                        <a class="btn btn-sm btn-danger d-block" href="/Paciente/Delete?id=@est.PacienteID">Eliminar</a>
+                    </td>
+         
+                </tr>
+            }
+        }
+    </tbody>
+</table>
