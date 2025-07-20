@@ -13,6 +13,14 @@
     </div>
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <p>
     <a class="btn btn-success mb-3" href="/Pacientes/Create">Registrar nuevo paciente</a>
 </p>
@@ -47,9 +55,9 @@
                     <td>@(est.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "No registrada")</td>
             
                     <td>
-                        <a class="btn btn-sm btn-primary d-block mb-2" href="/Paciente/Edit?id=@est.PacienteID">Editar</a>
-                        <a class="btn btn-sm btn-info d-block mb-2" href="/Paciente/Details?id=@est.PacienteID">Detalles</a>
-                        <a class="btn btn-sm btn-danger d-block" href="/Paciente/Delete?id=@est.PacienteID">Eliminar</a>
+                        <a class="btn btn-sm btn-primary d-block mb-2" href="/Pacientes/Edit?id=@est.PacienteID">Editar</a>
+                        <a class="btn btn-sm btn-info d-block mb-2" href="/Pacientes/Details?id=@est.PacienteID">Detalles</a>
+                        <a class="btn btn-sm btn-danger d-block" href="/Pacientes/Delete?id=@est.PacienteID">Eliminar</a>
                     </td>
          
                 </tr>

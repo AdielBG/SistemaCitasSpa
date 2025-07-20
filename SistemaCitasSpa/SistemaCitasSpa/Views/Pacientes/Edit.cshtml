@@ -1,0 +1,52 @@
+﻿@model SistemaCitasSpa.Models.Paciente
+
+@{
+    ViewBag.Title = "Editar Paciente";
+}
+
+<h2 class="text-center mb-4">Editar Información del Paciente</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form action="/Pacientes/Edit/@Model.PacienteID" method="post" class="card p-4 shadow-sm">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="PacienteID" value="@Model.PacienteID" />
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="Nombre" class="form-label">Nombre:</label>
+            <input type="text" name="Nombre" id="Nombre" class="form-control" value="@Model.Nombre" required />
+        </div>
+        <div class="col-md-6">
+            <label for="Apellido" class="form-label">Apellido:</label>
+            <input type="text" name="Apellido" id="Apellido" class="form-control" value="@Model.Apellido" required />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="Telefono" class="form-label">Teléfono:</label>
+            <input type="text" name="Telefono" id="Telefono" class="form-control" value="@Model.Telefono" />
+        </div>
+        <div class="col-md-6">
+            <label for="Correo" class="form-label">Correo electrónico:</label>
+            <input type="email" name="Correo" id="Correo" class="form-control" value="@Model.Correo" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="FechaNacimiento" class="form-label">Fecha de nacimiento:</label>
+            <input type="date" name="FechaNacimiento" id="FechaNacimiento" class="form-control" value="@Model.FechaNacimiento?.ToString("yyyy-MM-dd")" required />
+        </div>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="/Pacientes/Index" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
+</form>

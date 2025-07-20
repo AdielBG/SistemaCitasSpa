@@ -4,8 +4,9 @@
 //using System.Linq;
 //using System.Net;
 //using System.Web.Mvc;
-using SistemaCitasSpa.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SistemaCitasSpa.Models;
 
 namespace SistemaCitasSpa.Controllers
 {
@@ -49,7 +50,11 @@ namespace SistemaCitasSpa.Controllers
                 {
                     db.Pacientes.Add(paciente);
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    TempData["SuccessMessage"] = "Paciente registrado exitosamente.";
+                    return RedirectToAction(nameof(Index));
+
+                    //return RedirectToAction("Index");
+
                 }
             }
             catch (Exception ex)
@@ -59,5 +64,62 @@ namespace SistemaCitasSpa.Controllers
 
             return View(paciente);
         }
+
+
+        // GET: Pacientes/Edit/
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var paciente = await db.Pacientes.FindAsync(id);
+            if (paciente == null)
+            {
+                return NotFound();
+            }
+            return View(paciente);
+        }
+
+        // POST: Pacientes/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Paciente paciente)
+        {
+            if (id != paciente.PacienteID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    db.Update(paciente);
+                    await db.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Datos del paciente actualizados correctamente.";
+                    return RedirectToAction(nameof(Index));
+
+                    //return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!db.Pacientes.Any(e => e.PacienteID == paciente.PacienteID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            ViewBag.Error = "Verifica los datos ingresados.";
+            return View(paciente);
+        }
+
+
     }
 }
