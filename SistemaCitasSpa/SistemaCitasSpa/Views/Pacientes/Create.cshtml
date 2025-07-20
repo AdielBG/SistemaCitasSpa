@@ -1,0 +1,51 @@
+﻿@model SistemaCitasSpa.Models.Paciente
+
+@{
+    ViewBag.Title = "Registrar Paciente";
+}
+
+<h2 class="text-center mb-4">Registrar Nuevo Paciente</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form action="/Pacientes/Create" method="post" class="card p-4 shadow-sm">
+    @Html.AntiForgeryToken()
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="Nombre" class="form-label">Nombre:</label>
+            <input type="text" name="Nombre" id="Nombre" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label for="Apellido" class="form-label">Apellido:</label>
+            <input type="text" name="Apellido" id="Apellido" class="form-control" required />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="Telefono" class="form-label">Teléfono:</label>
+            <input type="text" name="Telefono" id="Telefono" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label for="Correo" class="form-label">Correo electrónico:</label>
+            <input type="email" name="Correo" id="Correo" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="FechaNacimiento" class="form-label">Fecha de nacimiento:</label>
+            <input type="date" name="FechaNacimiento" id="FechaNacimiento" class="form-control" required />
+        </div>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="/Pacientes/Index" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
+</form>
+

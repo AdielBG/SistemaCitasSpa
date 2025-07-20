@@ -29,5 +29,35 @@ namespace SistemaCitasSpa.Controllers
                 return View(new List<Paciente>());
             }
         }
+
+
+
+        // GET: Pacientes/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Pacientes/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Paciente paciente)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    db.Pacientes.Add(paciente);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Ocurrió un error al guardar el paciente: " + ex.Message;
+            }
+
+            return View(paciente);
+        }
     }
 }
