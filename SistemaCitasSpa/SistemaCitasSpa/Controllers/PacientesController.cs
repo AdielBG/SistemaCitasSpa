@@ -82,6 +82,8 @@ namespace SistemaCitasSpa.Controllers
             return View(paciente);
         }
 
+
+
         // POST: Pacientes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -119,6 +121,26 @@ namespace SistemaCitasSpa.Controllers
             ViewBag.Error = "Verifica los datos ingresados.";
             return View(paciente);
         }
+
+
+        //Pacientes/Details/
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var pac = db.Pacientes.FirstOrDefault(p => p.PacienteID == id);
+
+            if (pac == null)
+            {
+                return NotFound();
+            }
+
+            return View(pac);
+        }
+
 
 
     }

@@ -1,0 +1,40 @@
+﻿@model SistemaCitasSpa.Models.Paciente
+
+@{
+    ViewData["Title"] = "Detalles del Paciente";
+    var pac = Model;
+}
+
+<h2>Detalles del Paciente</h2>
+
+<table class="table table-bordered mt-4">
+    <tr>
+        <th>ID</th>
+        <td>@pac.PacienteID</td>
+    </tr>
+    <tr>
+        <th>Nombre</th>
+        <td>@pac.Nombre</td>
+    </tr>
+    <tr>
+        <th>Apellido</th>
+        <td>@pac.Apellido</td>
+    </tr>
+    <tr>
+        <th>Teléfono</th>
+        <td>@pac.Telefono</td>
+    </tr>
+    <tr>
+        <th>Correo</th>
+        <td>@pac.Correo</td>
+    </tr>
+    <tr>
+        <th>Fecha de Nacimiento</th>
+        <td>@(pac.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "No especificada")</td>
+    </tr>
+</table>
+
+<a href="/Pacientes/Edit/@pac.PacienteID" class="btn btn-warning">Editar</a>
+<a href="/Pacientes/Index" class="btn btn-secondary">Volver a la lista</a>
+
+
