@@ -7,20 +7,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasSpa.Models;
+using System.Text;
 
 namespace SistemaCitasSpa.Controllers
 {
     public class PacientesController : Controller
     {
 
-        private SpaDbContext db = new SpaDbContext();
-        
+        private readonly SpaDbContext _context;
+
+        // Constructor con inyección de dependencias
+        public PacientesController(SpaDbContext context)
+        {
+            _context = context;
+        }
+
         // GET: Pacientes
         public ActionResult Index()
         {
             try
             {
-                var pacientes = db.Pacientes.ToList();
+                var pacientes = _context.Pacientes.ToList();
                 return View(pacientes);
             }
             catch (Exception ex)
@@ -48,8 +55,8 @@ namespace SistemaCitasSpa.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    db.Pacientes.Add(paciente);
-                    db.SaveChanges();
+                    _context.Pacientes.Add(paciente);
+                    _context.SaveChanges();
                     TempData["SuccessMessage"] = "Paciente registrado exitosamente.";
                     return RedirectToAction(nameof(Index));
 
@@ -74,7 +81,7 @@ namespace SistemaCitasSpa.Controllers
                 return NotFound();
             }
 
-            var paciente = await db.Pacientes.FindAsync(id);
+            var paciente = await _context.Pacientes.FindAsync(id);
             if (paciente == null)
             {
                 return NotFound();
@@ -98,8 +105,8 @@ namespace SistemaCitasSpa.Controllers
             {
                 try
                 {
-                    db.Update(paciente);
-                    await db.SaveChangesAsync();
+                    _context.Update(paciente);
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Datos del paciente actualizados correctamente.";
                     return RedirectToAction(nameof(Index));
 
@@ -107,7 +114,7 @@ namespace SistemaCitasSpa.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!db.Pacientes.Any(e => e.PacienteID == paciente.PacienteID))
+                    if (!_context.Pacientes.Any(e => e.PacienteID == paciente.PacienteID))
                     {
                         return NotFound();
                     }
@@ -131,7 +138,7 @@ namespace SistemaCitasSpa.Controllers
                 return NotFound();
             }
 
-            var pac = db.Pacientes.FirstOrDefault(p => p.PacienteID == id);
+            var pac = _context.Pacientes.FirstOrDefault(p => p.PacienteID == id);
 
             if (pac == null)
             {
@@ -150,7 +157,7 @@ namespace SistemaCitasSpa.Controllers
                 return NotFound();
             }
 
-            var pac = db.Pacientes.FirstOrDefault(p => p.PacienteID == id);
+            var pac = _context.Pacientes.FirstOrDefault(p => p.PacienteID == id);
 
             if (pac == null)
             {
@@ -164,14 +171,44 @@ namespace SistemaCitasSpa.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var pac = db.Pacientes.FirstOrDefault(p => p.PacienteID == id);
+            var pac = _context.Pacientes.FirstOrDefault(p => p.PacienteID == id);
             if (pac != null)
             {
-                db.Pacientes.Remove(pac);
-                db.SaveChanges();
+                _context.Pacientes.Remove(pac);
+                _context.SaveChanges();
                 TempData["SuccessMessage"] = "Paciente eliminado correctamente.";
             }
             return RedirectToAction(nameof(Index));
+        }
+
+
+
+        //Exponrtar CSV
+        public IActionResult ExportarCSV()
+        {
+            try
+            {
+                var pacientes = _context.Pacientes.ToList();
+                var csvContent = new StringBuilder();
+                csvContent.AppendLine("ID,Nombre,Apellido,Telefono,Correo");
+
+                foreach (var pac in pacientes)
+                {
+                    csvContent.AppendLine($"{pac.PacienteID},{pac.Nombre},{pac.Apellido},{pac.Telefono},{pac.Correo}");
+                }
+
+                // Usar File() en lugar de FileContentResult
+                return File(
+                    Encoding.UTF8.GetBytes(csvContent.ToString()),
+                    "text/csv",
+                    "Pacientes.csv"
+                );
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error al exportar: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
 
 
