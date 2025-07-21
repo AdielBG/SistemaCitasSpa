@@ -1,0 +1,38 @@
+﻿@model SistemaCitasSpa.Models.Paciente
+
+@{
+    ViewData["Title"] = "Eliminar Paciente";
+    var pac = Model;
+}
+
+<h2>¿Estás seguro de que deseas eliminar este paciente?</h2>
+
+<table class="table table-bordered mt-4">
+    <tr>
+        <th>ID</th>
+        <td>@pac.PacienteID</td>
+    </tr>
+    <tr>
+        <th>Nombre</th>
+        <td>@pac.Nombre</td>
+    </tr>
+    <tr>
+        <th>Apellido</th>
+        <td>@pac.Apellido</td>
+    </tr>
+    <tr>
+        <th>Teléfono</th>
+        <td>@pac.Telefono</td>
+    </tr>
+    <tr>
+        <th>Correo</th>
+        <td>@pac.Correo</td>
+    </tr>
+</table>
+
+<form method="post" asp-action="Delete">
+    <input type="hidden" name="id" value="@pac.PacienteID" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+</form>
+

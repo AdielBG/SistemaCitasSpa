@@ -84,7 +84,7 @@ namespace SistemaCitasSpa.Controllers
 
 
 
-        // POST: Pacientes/Edit/5
+        // POST: Pacientes/Edit/
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Paciente paciente)
@@ -139,6 +139,39 @@ namespace SistemaCitasSpa.Controllers
             }
 
             return View(pac);
+        }
+
+
+        //Pacientes/Delete/
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var pac = db.Pacientes.FirstOrDefault(p => p.PacienteID == id);
+
+            if (pac == null)
+            {
+                return NotFound();
+            }
+
+            return View(pac);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var pac = db.Pacientes.FirstOrDefault(p => p.PacienteID == id);
+            if (pac != null)
+            {
+                db.Pacientes.Remove(pac);
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Paciente eliminado correctamente.";
+            }
+            return RedirectToAction(nameof(Index));
         }
 
 
