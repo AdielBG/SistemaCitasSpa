@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasSpa.Models;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,15 +14,6 @@ builder.Services.AddDbContext<SpaDbContext>(options =>
 var app = builder.Build();
 
 
-// En ConfigureServices
-//builder.Services.AddDbContext<SpaDbContext>(options =>
-//    options.UseSqlServer(SpaDb));
-
-//builder.Services.Configure<FormOptions>(options =>
-//{
-//    options.MultipartBodyLengthLimit = 60000000; // 60MB
-//});
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -33,12 +22,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.Use(async (context, next) =>
-{
-    await next();
-    // Evitar que el middleware cierre la conexión prematuramente
-    if (context.Response.HasStarted) return;
-});
+//app.Use(async (context, next) =>
+//{
+//    await next();
+//    // Evitar que el middleware cierre la conexión prematuramente
+//    if (context.Response.HasStarted) return;
+//});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

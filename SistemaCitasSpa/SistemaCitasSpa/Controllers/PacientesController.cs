@@ -186,32 +186,26 @@ namespace SistemaCitasSpa.Controllers
         //Exponrtar CSV
         public IActionResult ExportarCSV()
         {
-            try
-            {
-                var pacientes = _context.Pacientes.ToList();
-                var csvContent = new StringBuilder();
-                csvContent.AppendLine("ID,Nombre,Apellido,Telefono,Correo");
+            var pacientes = _context.Pacientes.ToList();
 
-                foreach (var pac in pacientes)
-                {
-                    csvContent.AppendLine($"{pac.PacienteID},{pac.Nombre},{pac.Apellido},{pac.Telefono},{pac.Correo}");
-                }
+            var sb = new StringBuilder();
+            sb.AppendLine("ID,Nombre,Apellido,Telefono,Correo");
 
-                // Usar File() en lugar de FileContentResult
-                return File(
-                    Encoding.UTF8.GetBytes(csvContent.ToString()),
-                    "text/csv",
-                    "Pacientes.csv"
-                );
-            }
-            catch (Exception ex)
+            foreach (var pac in pacientes)
             {
-                TempData["ErrorMessage"] = $"Error al exportar: {ex.Message}";
-                return RedirectToAction("Index");
+                sb.AppendLine($"{pac.PacienteID},{pac.Nombre},{pac.Apellido},{pac.Telefono},{pac.Correo}");
             }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var output = new FileContentResult(bytes, "text/csv")
+            {
+                FileDownloadName = "Pacientes.csv"
+            };
+
+            return output;
         }
 
-
+        //-------------------------------------------------------------------------------
 
     }
 }

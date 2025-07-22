@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SistemaCitasSpa.Models;
 
 public partial class Paciente
 {
-    
+
     public int PacienteID { get; set; }
 
     [Required(ErrorMessage = "El nombre es obligatorio.")]

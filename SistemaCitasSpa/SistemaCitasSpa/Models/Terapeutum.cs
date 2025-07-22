@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SistemaCitasSpa.Models;
+﻿namespace SistemaCitasSpa.Models;
 
 public partial class Terapeutum
 {
