@@ -1,0 +1,64 @@
+﻿@model IEnumerable<SistemaCitasSpa.Models.Servicio>
+
+@{
+    ViewBag.Title = "Lista de Servicios";
+}
+
+<h2 class="text-center mb-4">Servicios Registrados</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.Error
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<p>
+    <a class="btn btn-success mb-3" href="/Servicios/Create">Registrar nuevo servicio</a>
+    <a href="@Url.Action("ExportarCSV")" class="btn btn-dark mb-3">Exportar a CSV</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark text-center">
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Duración (min)</th>
+            <th style="width: 160px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center">No hay servicios registrados.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.NombreServicio</td>
+                    <td>@s.Descripcion</td>
+                    <td>@s.Precio.ToString("C")</td>
+                    <td>@s.DuracionEnMinutos</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary d-block mb-2" href="/Servicios/Edit?id=@s.ServicioID">Editar</a>
+                        <a class="btn btn-sm btn-info d-block mb-2" href="/Servicios/Details?id=@s.ServicioID">Detalles</a>
+                        <a class="btn btn-sm btn-danger d-block" href="/Servicios/Delete?id=@s.ServicioID">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
