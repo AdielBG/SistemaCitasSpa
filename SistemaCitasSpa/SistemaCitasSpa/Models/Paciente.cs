@@ -14,12 +14,15 @@ public partial class Paciente
     public string Apellido { get; set; } = null!;
 
     [Phone(ErrorMessage = "Teléfono inválido.")]
+    [Required(ErrorMessage = "El telefono es obligatorio.")]
     public string? Telefono { get; set; }
 
     [EmailAddress(ErrorMessage = "Correo inválido.")]
+    [Required(ErrorMessage = "El Correo es obligatorio.")]
     public string? Correo { get; set; }
 
     [DataType(DataType.Date)]
+    [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
     public DateOnly? FechaNacimiento { get; set; }
 
     public virtual ICollection<Citum> Cita { get; set; } = new List<Citum>();
