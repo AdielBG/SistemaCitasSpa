@@ -69,6 +69,17 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
+        //Details
+
+        public IActionResult Details(int id)
+        {
+            var servicio = _context.Servicios.FirstOrDefault(s => s.ServicioID == id);
+            if (servicio == null)
+                return NotFound();
+
+            return View(servicio);
+        }
+
 
 
     }
