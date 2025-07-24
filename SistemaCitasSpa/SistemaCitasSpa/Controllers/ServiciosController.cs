@@ -82,5 +82,39 @@ namespace SistemaCitasSpa.Controllers
 
 
 
+        //Edit
+
+        public IActionResult Edit(int id)
+        {
+            var servicio = _context.Servicios.Find(id);
+            if (servicio == null)
+                return NotFound();
+
+            return View(servicio);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Servicio servicio)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Servicios.Update(servicio);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Servicio actualizado exitosamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Error al actualizar: " + ex.Message;
+                }
+            }
+
+            return View(servicio);
+        }
+
+
     }
 }

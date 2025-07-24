@@ -1,0 +1,52 @@
+﻿@model SistemaCitasSpa.Models.Servicio
+
+@{
+    ViewBag.Title = "Editar Servicio";
+}
+
+<h2 class="text-center mb-4">Editar Servicio</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="ServicioID" />
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="NombreServicio" class="form-label"></label>
+                <input asp-for="NombreServicio" class="form-control" />
+                <span asp-validation-for="NombreServicio" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Descripcion" class="form-label"></label>
+                <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DuracionEnMinutos" class="form-label"></label>
+                <input asp-for="DuracionEnMinutos" class="form-control" type="number" min="1" max="600" />
+                <span asp-validation-for="DuracionEnMinutos" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Precio" class="form-label"></label>
+                <input asp-for="Precio" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="Precio" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                <button type="submit" class="btn btn-success">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
