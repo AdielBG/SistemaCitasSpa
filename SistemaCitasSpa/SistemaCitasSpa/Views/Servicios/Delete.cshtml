@@ -1,0 +1,40 @@
+﻿@using System.Globalization
+@* para incluir la cultura específica al formatear el precio *@
+
+@model SistemaCitasSpa.Models.Servicio
+
+@{
+    ViewData["Title"] = "Eliminar Servicio";
+    var servicio = Model;
+}
+
+<h2>¿Estás seguro de que deseas eliminar este servicio?</h2>
+
+<table class="table table-bordered mt-4">
+    <tr>
+        <th>ID</th>
+        <td>@servicio.ServicioID</td>
+    </tr>
+    <tr>
+        <th>Nombre</th>
+        <td>@servicio.NombreServicio</td>
+    </tr>
+    <tr>
+        <th>Descripción</th>
+        <td>@servicio.Descripcion</td>
+    </tr>
+    <tr>
+        <th>Precio</th>
+        <td>@servicio.Precio.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</td>
+    </tr>
+    <tr>
+        <th>Duración</th>
+        <td>@servicio.DuracionEnMinutos minutos</td>
+    </tr>
+</table>
+
+<form method="post" asp-action="Delete">
+    <input type="hidden" name="id" value="@servicio.ServicioID" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+</form>

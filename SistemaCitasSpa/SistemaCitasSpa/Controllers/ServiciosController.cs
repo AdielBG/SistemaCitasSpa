@@ -40,7 +40,7 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
-        // Create
+        // Servicios/Create
         public IActionResult Create()
         {
             return View();
@@ -69,7 +69,7 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
-        //Details
+        //Servicios/Details
 
         public IActionResult Details(int id)
         {
@@ -82,7 +82,7 @@ namespace SistemaCitasSpa.Controllers
 
 
 
-        //Edit
+        //Servicios/Edit
 
         public IActionResult Edit(int id)
         {
@@ -114,6 +114,42 @@ namespace SistemaCitasSpa.Controllers
 
             return View(servicio);
         }
+
+        // Servicios/Delete/
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var servicio = _context.Servicios.FirstOrDefault(s => s.ServicioID == id);
+
+            if (servicio == null)
+            {
+                return NotFound();
+            }
+
+            return View(servicio);
+        }
+
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var servicio = _context.Servicios.FirstOrDefault(s => s.ServicioID == id);
+            if (servicio != null)
+            {
+                _context.Servicios.Remove(servicio);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Servicio eliminado correctamente.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
 
 
     }
