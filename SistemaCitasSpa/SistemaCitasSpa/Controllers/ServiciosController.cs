@@ -39,5 +39,37 @@ namespace SistemaCitasSpa.Controllers
 
         }
 
+
+        // Create
+        public IActionResult Create()
+        {
+            return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Servicio servicio)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Servicios.Add(servicio);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Servicio registrado exitosamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Ocurrió un error al registrar el servicio: " + ex.Message;
+                }
+            }
+
+            return View(servicio);
+        }
+
+
+
+
     }
+}
