@@ -38,5 +38,35 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
+        // GET: Terapeutas/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Terapeutas/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Terapeutum terapeuta)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Terapeuta.Add(terapeuta);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Terapeuta registrado exitosamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Ocurrió un error al registrar el terapeuta: " + ex.Message;
+                }
+            }
+
+            return View(terapeuta);
+        }
+
+
     }
 }
