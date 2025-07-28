@@ -1,0 +1,64 @@
+﻿@model IEnumerable<SistemaCitasSpa.Models.Terapeutum>
+
+@{
+    ViewBag.Title = "Lista de Terapeutas";
+}
+
+<h2 class="text-center mb-4">Terapeutas Registrados</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.Error
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<p>
+    <a class="btn btn-success mb-3" href="/Terapeutas/Create">Registrar nuevo terapeuta</a>
+    <a href="@Url.Action("ExportarCSV")" class="btn btn-dark mb-3">Exportar a CSV</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark text-center">
+        <tr>
+            <th>Nombre</th>
+            <th>Especialidad</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th style="width: 160px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center">No hay terapeutas registrados.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var t in Model)
+            {
+                <tr>
+                    <td>@t.Nombre</td>
+                    <td>@t.Especialidad</td>
+                    <td>@t.Telefono</td>
+                    <td>@t.Correo</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary d-block mb-2" href="/Terapeutas/Edit?id=@t.TerapeutaID">Editar</a>
+                        <a class="btn btn-sm btn-info d-block mb-2" href="/Terapeutas/Details?id=@t.TerapeutaID">Detalles</a>
+                        <a class="btn btn-sm btn-danger d-block" href="/Terapeutas/Delete?id=@t.TerapeutaID">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
