@@ -101,6 +101,25 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
+        // Terapeutas/Details/
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var terapeuta = _context.Terapeuta.FirstOrDefault(t => t.TerapeutaID == id);
+
+            if (terapeuta == null)
+            {
+                return NotFound();
+            }
+
+            return View(terapeuta);
+        }
+
+
 
     }
 }
