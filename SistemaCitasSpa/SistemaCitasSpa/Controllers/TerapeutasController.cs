@@ -67,6 +67,40 @@ namespace SistemaCitasSpa.Controllers
             return View(terapeuta);
         }
 
+        // GET: Terapeutas/Edit/
+        public IActionResult Edit(int id)
+        {
+            var terapeuta = _context.Terapeuta.Find(id);
+            if (terapeuta == null)
+                return NotFound();
+
+            return View(terapeuta);
+        }
+
+        // POST: Terapeutas/Edit/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Terapeutum terapeuta)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Terapeuta.Update(terapeuta);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Terapeuta actualizado exitosamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Error al actualizar: " + ex.Message;
+                }
+            }
+
+            return View(terapeuta);
+        }
+
+
 
     }
 }
