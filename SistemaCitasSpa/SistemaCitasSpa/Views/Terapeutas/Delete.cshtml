@@ -1,0 +1,37 @@
+﻿@model SistemaCitasSpa.Models.Terapeutum
+
+@{
+    ViewData["Title"] = "Eliminar Terapeuta";
+    var terapeuta = Model;
+}
+
+<h2>¿Estás seguro de que deseas eliminar este terapeuta?</h2>
+
+<table class="table table-bordered mt-4">
+    <tr>
+        <th>ID</th>
+        <td>@terapeuta.TerapeutaID</td>
+    </tr>
+    <tr>
+        <th>Nombre</th>
+        <td>@terapeuta.Nombre</td>
+    </tr>
+    <tr>
+        <th>Especialidad</th>
+        <td>@terapeuta.Especialidad</td>
+    </tr>
+    <tr>
+        <th>Teléfono</th>
+        <td>@terapeuta.Telefono</td>
+    </tr>
+    <tr>
+        <th>Correo</th>
+        <td>@terapeuta.Correo</td>
+    </tr>
+</table>
+
+<form method="post" asp-action="Delete">
+    <input type="hidden" name="id" value="@terapeuta.TerapeutaID" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+</form>

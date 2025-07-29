@@ -120,6 +120,39 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
+        // Terapeutas/Delete
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var terapeuta = _context.Terapeuta.FirstOrDefault(t => t.TerapeutaID == id);
+
+            if (terapeuta == null)
+            {
+                return NotFound();
+            }
+
+            return View(terapeuta);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var terapeuta = _context.Terapeuta.FirstOrDefault(t => t.TerapeutaID == id);
+            if (terapeuta != null)
+            {
+                _context.Terapeuta.Remove(terapeuta);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Terapeuta eliminado correctamente.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+
 
     }
 }
