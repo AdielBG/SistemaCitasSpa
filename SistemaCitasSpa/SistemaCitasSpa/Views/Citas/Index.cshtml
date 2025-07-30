@@ -1,0 +1,77 @@
+﻿@model IEnumerable<SistemaCitasSpa.Models.Citum>
+@{
+    ViewData["Title"] = "Lista de Citas";
+}
+
+<h1>Lista de Citas</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear nueva cita</a>
+    <a asp-action="ExportarCSV" class="btn btn-success">Exportar CSV</a>
+</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay citas registradas.</div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Paciente</th>
+                <th>Servicio</th>
+                <th>Terapeuta</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Duración</th>
+                <th>Días/Horas restantes</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cita in Model)
+            {
+                var fechaHora = new DateTime(cita.Fecha.Year, cita.Fecha.Month, cita.Fecha.Day,
+                cita.Hora.Hour, cita.Hora.Minute, 0);
+                var ahora = DateTime.Now;
+                var tiempoRestante = fechaHora - ahora;
+
+                string estado = "";
+                if (fechaHora.Date > ahora.Date)
+                    estado = "Vigente";
+                else if (fechaHora.Date == ahora.Date)
+                    estado = "En proceso";
+                else
+                    estado = "Finalizado";
+
+                <tr>
+                    <td>@cita.CitaID</td>
+                    <td>@cita.Paciente?.Nombre</td>
+                    <td>@cita.Servicio?.NombreServicio</td>
+                    <td>@cita.Terapeuta?.Nombre</td>
+                    <td>@cita.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@cita.Hora.ToString("hh\\:mm")</td>
+                    <td>@(cita.Servicio?.DuracionEnMinutos ?? 0) minutos</td>
+                    <td>
+                        @(tiempoRestante.TotalMinutes > 0
+                                        ? $"{tiempoRestante.Days} días {tiempoRestante.Hours}h {tiempoRestante.Minutes}m"
+                                        : "0")
+            </td>
+            <td>
+                <span class="badge bg-@(estado == "Vigente" ? "info" : estado == "En proceso" ? "warning" : "secondary")">
+                    @estado
+                </span>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@cita.CitaID" class="btn btn-sm btn-warning">Editar</a>
+                <a asp-action="Details" asp-route-id="@cita.CitaID" class="btn btn-sm btn-info">Detalles</a>
+                <a asp-action="Delete" asp-route-id="@cita.CitaID" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+                }
+        </tbody>
+    </table>
+}
