@@ -1,6 +1,5 @@
 ﻿@using System.Globalization  
 @* para incluir la cultura específica al formatear el precio *@
-
 @model IEnumerable<SistemaCitasSpa.Models.Servicio>
 
 @{
@@ -53,7 +52,7 @@
                 <tr>
                     <td>@s.NombreServicio</td>
                     <td>@s.Descripcion</td>
-                    <td>@s.Precio.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</td>@* para incluir la cultura específica al formatear el precio *@
+                    <td>@s.Precio.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</td>
                     <td>@s.DuracionEnMinutos</td>
                     <td>
                         <a class="btn btn-sm btn-primary d-block mb-2" href="/Servicios/Edit?id=@s.ServicioID">Editar</a>

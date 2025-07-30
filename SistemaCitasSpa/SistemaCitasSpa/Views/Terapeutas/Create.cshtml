@@ -8,36 +8,35 @@
 
 <div class="row justify-content-center">
     <div class="col-md-6">
-
         @if (ViewBag.Error != null)
         {
             <div class="alert alert-danger">@ViewBag.Error</div>
         }
 
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" class="needs-validation" novalidate>
             <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
             <div class="mb-3">
                 <label asp-for="Nombre" class="form-label"></label>
-                <input asp-for="Nombre" class="form-control" />
+                <input asp-for="Nombre" class="form-control" required />
                 <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Especialidad" class="form-label"></label>
-                <input asp-for="Especialidad" class="form-control" />
+                <input asp-for="Especialidad" class="form-control" required />
                 <span asp-validation-for="Especialidad" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Telefono" class="form-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+                <input asp-for="Telefono" class="form-control" required />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Correo" class="form-label"></label>
-                <input asp-for="Correo" class="form-control" />
+                <input asp-for="Correo" class="form-control" type="email" required />
                 <span asp-validation-for="Correo" class="text-danger"></span>
             </div>
 
@@ -46,12 +45,9 @@
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
         </form>
-
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

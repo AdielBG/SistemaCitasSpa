@@ -13,32 +13,32 @@
 
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" class="card p-4 shadow-sm needs-validation" novalidate>
             <input type="hidden" asp-for="TerapeutaID" />
 
             <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
             <div class="mb-3">
                 <label asp-for="Nombre" class="form-label"></label>
-                <input asp-for="Nombre" class="form-control" />
+                <input asp-for="Nombre" class="form-control" required />
                 <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Especialidad" class="form-label"></label>
-                <input asp-for="Especialidad" class="form-control" />
+                <input asp-for="Especialidad" class="form-control" required />
                 <span asp-validation-for="Especialidad" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Telefono" class="form-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+                <input asp-for="Telefono" class="form-control" required />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Correo" class="form-label"></label>
-                <input asp-for="Correo" class="form-control" type="email" />
+                <input asp-for="Correo" class="form-control" type="email" required />
                 <span asp-validation-for="Correo" class="text-danger"></span>
             </div>
 
@@ -51,5 +51,5 @@
 </div>
 
 @section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <partial name="_ValidationScriptsPartial" />
 }

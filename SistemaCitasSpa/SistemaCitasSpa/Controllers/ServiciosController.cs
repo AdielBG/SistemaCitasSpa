@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasSpa.Models;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SistemaCitasSpa.Controllers
 {
@@ -14,6 +13,7 @@ namespace SistemaCitasSpa.Controllers
         {
             _context = context;
         }
+
         // GET: Servicios
         public async Task<IActionResult> Index(string mensaje = "")
         {
@@ -21,24 +21,28 @@ namespace SistemaCitasSpa.Controllers
             return View(await _context.Servicios.ToListAsync());
         }
 
-
         // GET: ExportarCSV
         public async Task<FileResult> ExportarCSV()
         {
-            var servicios = await _context.Servicios.ToListAsync();
-
-            var builder = new StringBuilder();
-            builder.AppendLine("ID,Nombre,Descripción,Precio");
-
-            foreach (var serv in servicios)
+            try
             {
-                builder.AppendLine($"{serv.ServicioID},{serv.NombreServicio},{serv.Descripcion},{serv.Precio}");
+                var servicios = await _context.Servicios.ToListAsync();
+                var builder = new StringBuilder();
+                builder.AppendLine("ID,Nombre,Descripción,Precio");
+
+                foreach (var serv in servicios)
+                {
+                    builder.AppendLine($"{serv.ServicioID},{serv.NombreServicio},{serv.Descripcion},{serv.Precio}");
+                }
+
+                return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "Servicios.csv");
             }
-
-            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "Servicios.csv");
-
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error al exportar servicios: " + ex.Message;
+                return null; // O redirigir a una acción
+            }
         }
-
 
         // Servicios/Create
         public IActionResult Create()
@@ -48,14 +52,14 @@ namespace SistemaCitasSpa.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Servicio servicio)
+        public async Task<IActionResult> Create(Servicio servicio)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Servicios.Add(servicio);
-                    _context.SaveChanges();
+                    await _context.Servicios.AddAsync(servicio);
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Servicio registrado exitosamente.";
                     return RedirectToAction(nameof(Index));
                 }
@@ -68,9 +72,7 @@ namespace SistemaCitasSpa.Controllers
             return View(servicio);
         }
 
-
         //Servicios/Details
-
         public IActionResult Details(int id)
         {
             var servicio = _context.Servicios.FirstOrDefault(s => s.ServicioID == id);
@@ -80,10 +82,7 @@ namespace SistemaCitasSpa.Controllers
             return View(servicio);
         }
 
-
-
         //Servicios/Edit
-
         public IActionResult Edit(int id)
         {
             var servicio = _context.Servicios.Find(id);
@@ -95,14 +94,14 @@ namespace SistemaCitasSpa.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Servicio servicio)
+        public async Task<IActionResult> Edit(Servicio servicio)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Servicios.Update(servicio);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Servicio actualizado exitosamente.";
                     return RedirectToAction(nameof(Index));
                 }
@@ -133,24 +132,19 @@ namespace SistemaCitasSpa.Controllers
             return View(servicio);
         }
 
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var servicio = _context.Servicios.FirstOrDefault(s => s.ServicioID == id);
+            var servicio = await _context.Servicios.FirstOrDefaultAsync(s => s.ServicioID == id);
             if (servicio != null)
             {
                 _context.Servicios.Remove(servicio);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Servicio eliminado correctamente.";
             }
 
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
     }
 }

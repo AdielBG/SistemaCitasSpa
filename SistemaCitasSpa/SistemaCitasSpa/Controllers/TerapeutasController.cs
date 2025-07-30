@@ -13,6 +13,7 @@ namespace SistemaCitasSpa.Controllers
         {
             _context = context;
         }
+
         // GET: Terapeutas
         public async Task<IActionResult> Index(string mensaje = "")
         {
@@ -20,23 +21,29 @@ namespace SistemaCitasSpa.Controllers
             return View(await _context.Terapeuta.ToListAsync());
         }
 
-
-        public IActionResult ExportarCSV()
+        // GET: ExportarCSV
+        public async Task<FileResult> ExportarCSV()
         {
-            var terapeutas = _context.Terapeuta.OrderBy(t => t.TerapeutaID).ToList();
-
-            var sb = new StringBuilder();
-            sb.AppendLine("ID,Nombre,Especialidad,Telefono,Correo");
-
-            foreach (var t in terapeutas)
+            try
             {
-                sb.AppendLine($"{t.TerapeutaID},{t.Nombre},{t.Especialidad},{t.Telefono},{t.Correo}");
+                var terapeutas = await _context.Terapeuta.OrderBy(t => t.TerapeutaID).ToListAsync();
+                var sb = new StringBuilder();
+                sb.AppendLine("ID,Nombre,Especialidad,Telefono,Correo");
+
+                foreach (var t in terapeutas)
+                {
+                    sb.AppendLine($"{t.TerapeutaID},{t.Nombre},{t.Especialidad},{t.Telefono},{t.Correo}");
+                }
+
+                var data = Encoding.UTF8.GetBytes(sb.ToString());
+                return File(data, "text/csv", "terapeutas.csv");
             }
-
-            var data = Encoding.UTF8.GetBytes(sb.ToString());
-            return File(data, "text/csv", "terapeutas.csv");
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error al exportar terapeutas: " + ex.Message;
+                return null; // O redirigir a una acción
+            }
         }
-
 
         // GET: Terapeutas/Create
         public IActionResult Create()
@@ -100,7 +107,6 @@ namespace SistemaCitasSpa.Controllers
             return View(terapeuta);
         }
 
-
         // Terapeutas/Details/
         public IActionResult Details(int? id)
         {
@@ -118,7 +124,6 @@ namespace SistemaCitasSpa.Controllers
 
             return View(terapeuta);
         }
-
 
         // Terapeutas/Delete
         public IActionResult Delete(int? id)
@@ -151,8 +156,5 @@ namespace SistemaCitasSpa.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
-
-
     }
 }

@@ -5,7 +5,7 @@
     var t = Model;
 }
 
-<h2>Detalles del Terapeuta</h2>
+<h2 class="text-center mb-4">Detalles del Terapeuta</h2>
 
 <table class="table table-bordered mt-4">
     <tr>
@@ -30,5 +30,7 @@
     </tr>
 </table>
 
-<a asp-action="Edit" asp-route-id="@t.TerapeutaID" class="btn btn-warning">Editar</a>
-<a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+<div class="d-flex justify-content-between">
+    <a asp-action="Edit" asp-route-id="@t.TerapeutaID" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+</div>
