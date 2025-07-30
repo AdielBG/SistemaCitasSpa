@@ -1,0 +1,54 @@
+﻿@model SistemaCitasSpa.Models.Citum
+
+@{
+    ViewData["Title"] = "Registrar Cita";
+}
+
+<h1 class="mb-4">Registrar Cita</h1>
+
+<form asp-action="Create" method="post" class="needs-validation" novalidate>
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="PacienteID" class="form-label">Paciente:</label>
+            @Html.DropDownListFor(model => model.PacienteID, (SelectList)ViewBag.Pacientes, "Seleccione un paciente", new { @class = "form-select" })
+            @Html.ValidationMessageFor(model => model.PacienteID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-md-4">
+            <label for="ServicioID" class="form-label">Servicio:</label>
+            @Html.DropDownListFor(model => model.ServicioID, (SelectList)ViewBag.Servicios, "Seleccione un servicio", new { @class = "form-select" })
+            @Html.ValidationMessageFor(model => model.ServicioID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-md-4">
+            <label for="TerapeutaID" class="form-label">Terapeuta:</label>
+            @Html.DropDownListFor(model => model.TerapeutaID, (SelectList)ViewBag.Terapeutas, "Seleccione un terapeuta", new { @class = "form-select" })
+            @Html.ValidationMessageFor(model => model.TerapeutaID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="Fecha" class="form-label">Fecha:</label>
+            <input type="date" name="Fecha" class="form-control" value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+            @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-md-6">
+            <label for="Hora" class="form-label">Hora:</label>
+            <input type="time" name="Hora" class="form-control" value="@Model.Hora.ToString("hh\\:mm")" />
+            @Html.ValidationMessageFor(model => model.Hora, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <input type="submit" value="Guardar" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

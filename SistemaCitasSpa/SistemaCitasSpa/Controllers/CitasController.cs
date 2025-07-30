@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasSpa.Models;
 using System.Text;
@@ -83,5 +84,48 @@ namespace SistemaCitasSpa.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+
+        // GET: Citas/Create
+        public ActionResult Create()
+        {
+            ViewBag.Pacientes = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre");
+            ViewBag.Servicios = new SelectList(_context.Servicios.ToList(), "ServicioID", "Nombre");
+            ViewBag.Terapeutas = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre");
+            return View(new Citum
+            {
+                Fecha = DateOnly.FromDateTime(DateTime.Today),
+                Hora = TimeOnly.FromDateTime(DateTime.Now)
+            });
+        }
+
+
+        // POST: Citas/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Citum cita)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _context.Cita.Add(cita);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Cita registrada exitosamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Ocurrió un error al guardar la cita: " + ex.Message;
+            }
+
+            ViewBag.Pacientes = new SelectList(_context.Pacientes, "PacienteID", "Nombre", cita.PacienteID);
+            ViewBag.Servicios = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
+            ViewBag.Terapeutas = new SelectList(_context.Terapeuta, "TerapeutaID", "Nombre", cita.TerapeutaID);
+            return View(cita);
+        }
+
+
     }
 }
