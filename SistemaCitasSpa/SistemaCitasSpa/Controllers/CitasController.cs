@@ -89,16 +89,24 @@ namespace SistemaCitasSpa.Controllers
         // GET: Citas/Create
         public ActionResult Create()
         {
-            ViewBag.Pacientes = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre");
-            ViewBag.Servicios = new SelectList(_context.Servicios.ToList(), "ServicioID", "Nombre");
-            ViewBag.Terapeutas = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre");
-            return View(new Citum
+            try
             {
-                Fecha = DateOnly.FromDateTime(DateTime.Today),
-                Hora = TimeOnly.FromDateTime(DateTime.Now)
-            });
-        }
+                CargarViewBags();
 
+                var nuevaCita = new Citum
+                {
+                    Fecha = DateOnly.FromDateTime(DateTime.Today),
+                    Hora = TimeOnly.FromDateTime(DateTime.Now)
+                };
+
+                return View(nuevaCita);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error al cargar la página: " + ex.Message;
+                return View(new Citum());
+            }
+        }
 
         // POST: Citas/Create
         [HttpPost]
@@ -107,24 +115,123 @@ namespace SistemaCitasSpa.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                // Debug: Verificar qué datos llegan
+                System.Diagnostics.Debug.WriteLine($"PacienteID: {cita.PacienteID}");
+                System.Diagnostics.Debug.WriteLine($"ServicioID: {cita.ServicioID}");
+                System.Diagnostics.Debug.WriteLine($"TerapeutaID: {cita.TerapeutaID}");
+                System.Diagnostics.Debug.WriteLine($"Fecha: {cita.Fecha}");
+                System.Diagnostics.Debug.WriteLine($"Hora: {cita.Hora}");
+
+                // Remover errores de validación de las propiedades de navegación
+                ModelState.Remove("Paciente");
+                ModelState.Remove("Servicio");
+                ModelState.Remove("Terapeuta");
+
+                // Validaciones manuales para los IDs
+                if (cita.PacienteID <= 0)
+                    ModelState.AddModelError("PacienteID", "Debe seleccionar un paciente.");
+
+                if (cita.ServicioID <= 0)
+                    ModelState.AddModelError("ServicioID", "Debe seleccionar un servicio.");
+
+                if (cita.TerapeutaID <= 0)
+                    ModelState.AddModelError("TerapeutaID", "Debe seleccionar un terapeuta.");
+
+                // Debug: Verificar errores de validación
+                if (!ModelState.IsValid)
                 {
-                    _context.Cita.Add(cita);
-                    _context.SaveChanges();
-                    TempData["SuccessMessage"] = "Cita registrada exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    foreach (var error in ModelState)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Campo: {error.Key}");
+                        foreach (var subError in error.Value.Errors)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error: {subError.ErrorMessage}");
+                        }
+                    }
+
+                    ViewBag.ValidationErrors = "Hay errores de validación en el formulario.";
+                    CargarViewBags(cita);
+                    return View(cita);
                 }
+
+                _context.Cita.Add(cita);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Cita registrada exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ViewBag.Error = "Ocurrió un error al guardar la cita: " + ex.Message;
+                System.Diagnostics.Debug.WriteLine($"Error en Create: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
             }
 
-            ViewBag.Pacientes = new SelectList(_context.Pacientes, "PacienteID", "Nombre", cita.PacienteID);
-            ViewBag.Servicios = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
-            ViewBag.Terapeutas = new SelectList(_context.Terapeuta, "TerapeutaID", "Nombre", cita.TerapeutaID);
+            // Importante: Recargar los ViewBags cuando hay errores de validación
+            CargarViewBags(cita);
             return View(cita);
         }
+
+        // Método helper para evitar duplicación de código
+        private void CargarViewBags(Citum cita = null)
+        {
+            try
+            {
+                ViewBag.Pacientes = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre", cita?.PacienteID);
+                ViewBag.Servicios = new SelectList(_context.Servicios.ToList(), "ServicioID", "NombreServicio", cita?.ServicioID);
+                ViewBag.Terapeutas = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre", cita?.TerapeutaID);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error al cargar las listas: " + ex.Message;
+                ViewBag.Pacientes = new SelectList(new List<object>(), "PacienteID", "Nombre");
+                ViewBag.Servicios = new SelectList(new List<object>(), "ServicioID", "NombreServicio");
+                ViewBag.Terapeutas = new SelectList(new List<object>(), "TerapeutaID", "Nombre");
+            }
+        }
+
+
+        //---------------------------------------------------------------------------------------------------
+
+
+        //// GET: Citas/Create
+        //public ActionResult Create()
+        //{
+        //    ViewBag.Pacientes = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre");
+        //    ViewBag.Servicios = new SelectList(_context.Servicios.ToList(), "ServicioID", "Nombre");
+        //    ViewBag.Terapeutas = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre");
+        //    return View(new Citum
+        //    {
+        //        Fecha = DateOnly.FromDateTime(DateTime.Today),
+        //        Hora = TimeOnly.FromDateTime(DateTime.Now)
+        //    });
+        //}
+
+
+        //// POST: Citas/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(Citum cita)
+        //{
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            _context.Cita.Add(cita);
+        //            _context.SaveChanges();
+        //            TempData["SuccessMessage"] = "Cita registrada exitosamente.";
+        //            return RedirectToAction(nameof(Index));
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Error = "Ocurrió un error al guardar la cita: " + ex.Message;
+        //    }
+
+        //    ViewBag.Pacientes = new SelectList(_context.Pacientes, "PacienteID", "Nombre", cita.PacienteID);
+        //    ViewBag.Servicios = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
+        //    ViewBag.Terapeutas = new SelectList(_context.Terapeuta, "TerapeutaID", "Nombre", cita.TerapeutaID);
+        //    return View(cita);
+        //}
 
 
     }

@@ -1,17 +1,33 @@
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasSpa.Models;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// Configurar la zona horaria para República Dominicana
+var dominicanTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Atlantic Standard Time");
+
+// Configurar la cultura para República Dominicana
+var culture = new CultureInfo("es-DO"); // Español - República Dominicana
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 
 
+// Registrar el TimeZoneInfo como servicio para usar en los controladores
+builder.Services.AddSingleton(dominicanTimeZone);
+
+
 builder.Services.AddDbContext<SpaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SpaDB")));
 
 var app = builder.Build();
+
 
 
 // Configure the HTTP request pipeline.
