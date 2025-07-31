@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasSpa.Models;
 
@@ -38,4 +39,52 @@ public partial class Citum
     public virtual Servicio Servicio { get; set; } = null!;
 
     public virtual Terapeutum Terapeuta { get; set; } = null!;
+
+
+    // ✅ CAMPOS CALCULADOS (NO MAPEADOS A LA BD)
+
+    [NotMapped]
+    [Display(Name = "Duración (minutos)")]
+    public int Duracion => Servicio?.DuracionEnMinutos ?? 0;
+
+    [NotMapped]
+    [Display(Name = "Días restantes")]
+    public int DiasRestantes
+    {
+        get
+        {
+            var hoy = DateOnly.FromDateTime(DateTime.Today);
+            return Fecha.DayNumber - hoy.DayNumber;
+        }
+    }
+
+    [NotMapped]
+    [Display(Name = "Horas restantes")]
+    public int HorasRestantes
+    {
+        get
+        {
+            var citaDateTime = Fecha.ToDateTime(Hora);
+            var ahora = DateTime.Now;
+            return (int)(citaDateTime - ahora).TotalHours;
+        }
+    }
+
+    [NotMapped]
+    [Display(Name = "Estado")]
+    public string Estado
+    {
+        get
+        {
+            var citaDateTime = Fecha.ToDateTime(Hora);
+            var ahora = DateTime.Now;
+
+            if (citaDateTime > ahora)
+                return "Vigente";
+            else if (citaDateTime.Date == ahora.Date)
+                return "En proceso";
+            else
+                return "Finalizado";
+        }
+    }
 }

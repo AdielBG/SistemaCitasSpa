@@ -1,0 +1,66 @@
+﻿@model SistemaCitasSpa.Models.Citum
+
+@{
+    ViewBag.Title = "Editar Cita";
+}
+
+<h2 class="text-center mb-4">Editar Información de la Cita</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Edit" method="post" class="card p-4 shadow-sm">
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+    <input type="hidden" name="CitaID" value="@Model.CitaID" />
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label asp-for="PacienteID" class="form-label">Paciente:</label>
+            <select asp-for="PacienteID" asp-items="ViewBag.PacienteID" class="form-select" required>
+                <option value="">Seleccione...</option>
+            </select>
+            @Html.ValidationMessageFor(model => model.PacienteID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-4">
+            <label asp-for="ServicioID" class="form-label">Servicio:</label>
+            <select asp-for="ServicioID" asp-items="ViewBag.ServicioID" class="form-select" required>
+                <option value="">Seleccione...</option>
+            </select>
+            @Html.ValidationMessageFor(model => model.ServicioID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-4">
+            <label asp-for="TerapeutaID" class="form-label">Terapeuta:</label>
+            <select asp-for="TerapeutaID" asp-items="ViewBag.TerapeutaID" class="form-select" required>
+                <option value="">Seleccione...</option>
+            </select>
+            @Html.ValidationMessageFor(model => model.TerapeutaID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="Fecha" class="form-label">Fecha y Hora:</label>
+            <input asp-for="Fecha" type="datetime-local" class="form-control" required />
+            @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Duracion" class="form-label">Duración Estimada (minutos):</label>
+            <input asp-for="Duracion" type="number" class="form-control" required />
+            @Html.ValidationMessageFor(model => model.Duracion, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    @* <div class="mb-3">
+        <label asp-for="Notas" class="form-label">Notas:</label>
+        <textarea asp-for="Notas" class="form-control"></textarea>
+        @Html.ValidationMessageFor(model => model.Notas, "", new { @class = "text-danger" })
+    </div> *@
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
+</form>

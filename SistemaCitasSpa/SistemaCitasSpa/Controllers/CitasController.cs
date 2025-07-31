@@ -234,5 +234,71 @@ namespace SistemaCitasSpa.Controllers
         //}
 
 
+        // GET: Citas/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var cita = await _context.Cita.FindAsync(id);
+            if (cita == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["PacienteID"] = new SelectList(_context.Pacientes, "PacienteID", "NombreCompleto", cita.PacienteID);
+            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
+            ViewData["TerapeutaID"] = new SelectList(_context.Terapeuta, "TerapeutaID", "NombreCompleto", cita.TerapeutaID);
+
+            return View(cita);
+        }
+
+        // POST: Citas/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Citum cita)
+        {
+            if (id != cita.CitaID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    //cita.FechaRegistro = DateTime.Now;
+                    //cita.CalcularCampos(); // Método para calcular duración, estado, etc.
+
+                    _context.Update(cita);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Cita actualizada correctamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Cita.Any(e => e.CitaID == cita.CitaID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            ViewBag.Error = "Verifica los datos ingresados.";
+            ViewData["PacienteID"] = new SelectList(_context.Pacientes, "PacienteID", "NombreCompleto", cita.PacienteID);
+            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
+            ViewData["TerapeutaID"] = new SelectList(_context.Terapeuta, "TerapeutaID", "NombreCompleto", cita.TerapeutaID);
+
+            return View(cita);
+        }
+
+
     }
 }
