@@ -86,5 +86,6 @@ public partial class Citum
             else
                 return "Finalizado";
         }
+
     }
 }

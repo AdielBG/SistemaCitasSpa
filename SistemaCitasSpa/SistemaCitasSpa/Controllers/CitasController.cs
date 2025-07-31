@@ -356,5 +356,48 @@ namespace SistemaCitasSpa.Controllers
         }
 
 
+
+        // Citas/Delete/
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var cita = _context.Cita
+                .Include(c => c.Paciente)
+                .Include(c => c.Servicio)
+                .Include(c => c.Terapeuta)
+                .FirstOrDefault(c => c.CitaID == id);
+
+            if (cita == null)
+            {
+                return NotFound();
+            }
+
+            return View(cita);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var cita = _context.Cita.FirstOrDefault(c => c.CitaID == id);
+            if (cita != null)
+            {
+                _context.Cita.Remove(cita);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = $"La cita #{id} fue eliminada exitosamente.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = $"No se encontró la cita #{id}.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }
