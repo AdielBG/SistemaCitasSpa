@@ -242,15 +242,19 @@ namespace SistemaCitasSpa.Controllers
                 return NotFound();
             }
 
-            var cita = await _context.Cita.FindAsync(id);
+            var cita = await _context.Cita
+                .Include(c => c.Paciente)
+                .Include(c => c.Servicio)
+                .Include(c => c.Terapeuta)
+                .FirstOrDefaultAsync(c => c.CitaID == id);
+
             if (cita == null)
             {
                 return NotFound();
             }
 
-            ViewData["PacienteID"] = new SelectList(_context.Pacientes, "PacienteID", "NombreCompleto", cita.PacienteID);
-            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
-            ViewData["TerapeutaID"] = new SelectList(_context.Terapeuta, "TerapeutaID", "NombreCompleto", cita.TerapeutaID);
+            // Cargar ViewBags para los dropdowns
+            CargarViewBagsEdit(cita);
 
             return View(cita);
         }
@@ -265,16 +269,17 @@ namespace SistemaCitasSpa.Controllers
                 return NotFound();
             }
 
+            // Remover errores de validación de las propiedades de navegación
+            ModelState.Remove("Paciente");
+            ModelState.Remove("Servicio");
+            ModelState.Remove("Terapeuta");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //cita.FechaRegistro = DateTime.Now;
-                    //cita.CalcularCampos(); // Método para calcular duración, estado, etc.
-
                     _context.Update(cita);
                     await _context.SaveChangesAsync();
-
                     TempData["SuccessMessage"] = "Cita actualizada correctamente.";
                     return RedirectToAction(nameof(Index));
                 }
@@ -289,16 +294,43 @@ namespace SistemaCitasSpa.Controllers
                         throw;
                     }
                 }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Error al actualizar la cita: " + ex.Message;
+                }
             }
 
-            ViewBag.Error = "Verifica los datos ingresados.";
-            ViewData["PacienteID"] = new SelectList(_context.Pacientes, "PacienteID", "NombreCompleto", cita.PacienteID);
-            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
-            ViewData["TerapeutaID"] = new SelectList(_context.Terapeuta, "TerapeutaID", "NombreCompleto", cita.TerapeutaID);
+            // IMPORTANTE: Recargar las relaciones cuando hay errores de validación
+            // Esto evita el NullReferenceException en las propiedades calculadas
+            cita = await _context.Cita
+                .Include(c => c.Paciente)
+                .Include(c => c.Servicio)
+                .Include(c => c.Terapeuta)
+                .FirstOrDefaultAsync(c => c.CitaID == id) ?? cita;
+
+            ViewBag.Error = ViewBag.Error ?? "Verifica los datos ingresados.";
+            CargarViewBagsEdit(cita);
 
             return View(cita);
         }
 
+        // Método helper específico para Edit
+        private void CargarViewBagsEdit(Citum cita)
+        {
+            try
+            {
+                ViewBag.PacienteID = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre", cita?.PacienteID);
+                ViewBag.ServicioID = new SelectList(_context.Servicios.ToList(), "ServicioID", "NombreServicio", cita?.ServicioID);
+                ViewBag.TerapeutaID = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre", cita?.TerapeutaID);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error al cargar las listas: " + ex.Message;
+                ViewBag.PacienteID = new SelectList(new List<object>(), "PacienteID", "Nombre");
+                ViewBag.ServicioID = new SelectList(new List<object>(), "ServicioID", "NombreServicio");
+                ViewBag.TerapeutaID = new SelectList(new List<object>(), "TerapeutaID", "Nombre");
+            }
+        }
 
     }
 }
