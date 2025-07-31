@@ -332,5 +332,29 @@ namespace SistemaCitasSpa.Controllers
             }
         }
 
+
+        // GET: Citas/Details/5
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var cita = _context.Cita
+                .Include(c => c.Paciente)
+                .Include(c => c.Servicio)
+                .Include(c => c.Terapeuta)
+                .FirstOrDefault(c => c.CitaID == id);
+
+            if (cita == null)
+            {
+                return NotFound();
+            }
+
+            return View(cita);
+        }
+
+
     }
 }
