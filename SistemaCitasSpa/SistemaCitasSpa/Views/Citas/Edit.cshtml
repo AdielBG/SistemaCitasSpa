@@ -1,4 +1,5 @@
 ﻿@model SistemaCitasSpa.Models.Citum
+
 @{
     ViewBag.Title = "Editar Cita";
 }
@@ -10,7 +11,7 @@
     <div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<form action="/Citas/Edit/@Model.CitaID" method="post" class="card p-4 shadow-sm">
+<form asp-action="Edit" method="post" class="card p-4 shadow-sm">
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 

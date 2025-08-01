@@ -16,15 +16,15 @@ namespace SistemaCitasSpa.Controllers
         }
 
         // GET: Citas
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                var citas = _context.Cita
+                var citas = await _context.Cita
                     .Include(c => c.Paciente)
                     .Include(c => c.Servicio)
                     .Include(c => c.Terapeuta)
-                    .ToList();
+                    .ToListAsync();
 
                 return View(citas);
             }
@@ -36,15 +36,15 @@ namespace SistemaCitasSpa.Controllers
         }
 
         // Exportar CSV
-        public IActionResult ExportarCSV()
+        public async Task<IActionResult> ExportarCSV()
         {
             try
             {
-                var citas = _context.Cita
+                var citas = await _context.Cita
                     .Include(c => c.Paciente)
                     .Include(c => c.Servicio)
                     .Include(c => c.Terapeuta)
-                    .ToList();
+                    .ToListAsync();
 
                 var sb = new StringBuilder();
                 sb.AppendLine("CitaID,Paciente,Servicio,Terapeuta,Fecha,Hora,Duracion,Días Restantes,Estado");
@@ -56,13 +56,8 @@ namespace SistemaCitasSpa.Controllers
                     var ahora = DateTime.Now;
                     var tiempoRestante = fechaHora - ahora;
 
-                    string estado;
-                    if (fechaHora.Date > ahora.Date)
-                        estado = "Vigente";
-                    else if (fechaHora.Date == ahora.Date)
-                        estado = "En proceso";
-                    else
-                        estado = "Finalizado";
+                    string estado = fechaHora.Date > ahora.Date ? "Vigente" :
+                                    fechaHora.Date == ahora.Date ? "En proceso" : "Finalizado";
 
                     sb.AppendLine($"{cita.CitaID}," +
                                   $"{cita.Paciente?.Nombre}," +
@@ -85,13 +80,12 @@ namespace SistemaCitasSpa.Controllers
             }
         }
 
-
         // GET: Citas/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
             try
             {
-                CargarViewBags();
+                await CargarViewBagsAsync();
 
                 var nuevaCita = new Citum
                 {
@@ -111,23 +105,14 @@ namespace SistemaCitasSpa.Controllers
         // POST: Citas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Citum cita)
+        public async Task<ActionResult> Create(Citum cita)
         {
             try
             {
-                // Debug: Verificar qué datos llegan
-                System.Diagnostics.Debug.WriteLine($"PacienteID: {cita.PacienteID}");
-                System.Diagnostics.Debug.WriteLine($"ServicioID: {cita.ServicioID}");
-                System.Diagnostics.Debug.WriteLine($"TerapeutaID: {cita.TerapeutaID}");
-                System.Diagnostics.Debug.WriteLine($"Fecha: {cita.Fecha}");
-                System.Diagnostics.Debug.WriteLine($"Hora: {cita.Hora}");
-
-                // Remover errores de validación de las propiedades de navegación
                 ModelState.Remove("Paciente");
                 ModelState.Remove("Servicio");
                 ModelState.Remove("Terapeuta");
 
-                // Validaciones manuales para los IDs
                 if (cita.PacienteID <= 0)
                     ModelState.AddModelError("PacienteID", "Debe seleccionar un paciente.");
 
@@ -137,48 +122,35 @@ namespace SistemaCitasSpa.Controllers
                 if (cita.TerapeutaID <= 0)
                     ModelState.AddModelError("TerapeutaID", "Debe seleccionar un terapeuta.");
 
-                // Debug: Verificar errores de validación
                 if (!ModelState.IsValid)
                 {
-                    foreach (var error in ModelState)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Campo: {error.Key}");
-                        foreach (var subError in error.Value.Errors)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Error: {subError.ErrorMessage}");
-                        }
-                    }
-
                     ViewBag.ValidationErrors = "Hay errores de validación en el formulario.";
-                    CargarViewBags(cita);
+                    await CargarViewBagsAsync(cita);
                     return View(cita);
                 }
 
                 _context.Cita.Add(cita);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Cita registrada exitosamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ViewBag.Error = "Ocurrió un error al guardar la cita: " + ex.Message;
-                System.Diagnostics.Debug.WriteLine($"Error en Create: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
             }
 
-            // Importante: Recargar los ViewBags cuando hay errores de validación
-            CargarViewBags(cita);
+            await CargarViewBagsAsync(cita);
             return View(cita);
         }
 
-        // Método helper para evitar duplicación de código
-        private void CargarViewBags(Citum cita = null)
+        // Método helper para cargar datos en los dropdowns
+        private async Task CargarViewBagsAsync(Citum cita = null)
         {
             try
             {
-                ViewBag.Pacientes = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre", cita?.PacienteID);
-                ViewBag.Servicios = new SelectList(_context.Servicios.ToList(), "ServicioID", "NombreServicio", cita?.ServicioID);
-                ViewBag.Terapeutas = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre", cita?.TerapeutaID);
+                ViewBag.Pacientes = new SelectList(await _context.Pacientes.ToListAsync(), "PacienteID", "Nombre", cita?.PacienteID);
+                ViewBag.Servicios = new SelectList(await _context.Servicios.ToListAsync(), "ServicioID", "NombreServicio", cita?.ServicioID);
+                ViewBag.Terapeutas = new SelectList(await _context.Terapeuta.ToListAsync(), "TerapeutaID", "Nombre", cita?.TerapeutaID);
             }
             catch (Exception ex)
             {
@@ -188,51 +160,6 @@ namespace SistemaCitasSpa.Controllers
                 ViewBag.Terapeutas = new SelectList(new List<object>(), "TerapeutaID", "Nombre");
             }
         }
-
-
-        //---------------------------------------------------------------------------------------------------
-
-
-        //// GET: Citas/Create
-        //public ActionResult Create()
-        //{
-        //    ViewBag.Pacientes = new SelectList(_context.Pacientes.ToList(), "PacienteID", "Nombre");
-        //    ViewBag.Servicios = new SelectList(_context.Servicios.ToList(), "ServicioID", "Nombre");
-        //    ViewBag.Terapeutas = new SelectList(_context.Terapeuta.ToList(), "TerapeutaID", "Nombre");
-        //    return View(new Citum
-        //    {
-        //        Fecha = DateOnly.FromDateTime(DateTime.Today),
-        //        Hora = TimeOnly.FromDateTime(DateTime.Now)
-        //    });
-        //}
-
-
-        //// POST: Citas/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create(Citum cita)
-        //{
-        //    try
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            _context.Cita.Add(cita);
-        //            _context.SaveChanges();
-        //            TempData["SuccessMessage"] = "Cita registrada exitosamente.";
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ViewBag.Error = "Ocurrió un error al guardar la cita: " + ex.Message;
-        //    }
-
-        //    ViewBag.Pacientes = new SelectList(_context.Pacientes, "PacienteID", "Nombre", cita.PacienteID);
-        //    ViewBag.Servicios = new SelectList(_context.Servicios, "ServicioID", "Nombre", cita.ServicioID);
-        //    ViewBag.Terapeutas = new SelectList(_context.Terapeuta, "TerapeutaID", "Nombre", cita.TerapeutaID);
-        //    return View(cita);
-        //}
-
 
         // GET: Citas/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -334,18 +261,18 @@ namespace SistemaCitasSpa.Controllers
 
 
         // GET: Citas/Details/5
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var cita = _context.Cita
+            var cita = await _context.Cita
                 .Include(c => c.Paciente)
                 .Include(c => c.Servicio)
                 .Include(c => c.Terapeuta)
-                .FirstOrDefault(c => c.CitaID == id);
+                .FirstOrDefaultAsync(c => c.CitaID == id);
 
             if (cita == null)
             {
@@ -355,21 +282,19 @@ namespace SistemaCitasSpa.Controllers
             return View(cita);
         }
 
-
-
-        // Citas/Delete/
-        public IActionResult Delete(int? id)
+        // GET: Citas/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var cita = _context.Cita
+            var cita = await _context.Cita
                 .Include(c => c.Paciente)
                 .Include(c => c.Servicio)
                 .Include(c => c.Terapeuta)
-                .FirstOrDefault(c => c.CitaID == id);
+                .FirstOrDefaultAsync(c => c.CitaID == id);
 
             if (cita == null)
             {
@@ -379,15 +304,16 @@ namespace SistemaCitasSpa.Controllers
             return View(cita);
         }
 
+        // POST: Citas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cita = _context.Cita.FirstOrDefault(c => c.CitaID == id);
+            var cita = await _context.Cita.FirstOrDefaultAsync(c => c.CitaID == id);
             if (cita != null)
             {
                 _context.Cita.Remove(cita);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"La cita #{id} fue eliminada exitosamente.";
             }
             else
@@ -397,7 +323,5 @@ namespace SistemaCitasSpa.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
     }
 }

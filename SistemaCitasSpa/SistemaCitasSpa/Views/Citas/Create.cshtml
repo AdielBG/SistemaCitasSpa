@@ -8,23 +8,17 @@
 
 @if (!string.IsNullOrEmpty(ViewBag.Error))
 {
-    <div class="alert alert-danger">
-        @ViewBag.Error
-    </div>
+    <div class="alert alert-danger">@ViewBag.Error</div>
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.ValidationErrors))
 {
-    <div class="alert alert-warning">
-        @ViewBag.ValidationErrors
-    </div>
+    <div class="alert alert-warning">@ViewBag.ValidationErrors</div>
 }
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
 }
 
 <form asp-action="Create" method="post" class="needs-validation" novalidate>
