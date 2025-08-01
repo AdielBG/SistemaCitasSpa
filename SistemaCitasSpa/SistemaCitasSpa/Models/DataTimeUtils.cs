@@ -60,14 +60,17 @@
         /// </summary>
         public static string GetEstadoCita(DateOnly fecha, TimeOnly hora)
         {
-            var fechaHoraCita = CombineDateAndTime(fecha, hora);
+            var fechaHoraCita = fecha.ToDateTime(hora);
             var ahoraDominicana = GetDominicanNow();
 
-            if (fechaHoraCita.Date > ahoraDominicana.Date)
+            // Calcular diferencia en minutos
+            var diferenciaMinutos = (fechaHoraCita - ahoraDominicana).TotalMinutes;
+
+            if (diferenciaMinutos > 60) // Más de 1 hora en el futuro
                 return "Vigente";
-            else if (fechaHoraCita.Date == ahoraDominicana.Date)
+            else if (diferenciaMinutos >= 0 && diferenciaMinutos <= 60) // Entre ahora y 1 hora después
                 return "En proceso";
-            else
+            else // Ya pasó
                 return "Finalizada";
         }
 
@@ -76,7 +79,7 @@
         /// </summary>
         public static TimeSpan GetTiempoRestante(DateOnly fecha, TimeOnly hora)
         {
-            var fechaHoraCita = CombineDateAndTime(fecha, hora);
+            var fechaHoraCita = fecha.ToDateTime(hora);
             var ahoraDominicana = GetDominicanNow();
 
             var tiempoRestante = fechaHoraCita - ahoraDominicana;
@@ -91,9 +94,27 @@
             var tiempoRestante = GetTiempoRestante(fecha, hora);
 
             if (tiempoRestante == TimeSpan.Zero)
-                return "0";
+                return "Finalizada";
 
-            return $"{tiempoRestante.Days} días, {tiempoRestante.Hours:D2}:{tiempoRestante.Minutes:D2}";
+            if (tiempoRestante.TotalDays >= 1)
+                return $"{tiempoRestante.Days} días, {tiempoRestante.Hours:D2}:{tiempoRestante.Minutes:D2}";
+            else
+                return $"{tiempoRestante.Hours:D2}:{tiempoRestante.Minutes:D2}";
+        }
+
+        /// <summary>
+        /// Método de debugging para verificar cálculos
+        /// </summary>
+        public static string GetDebugInfo(DateOnly fecha, TimeOnly hora)
+        {
+            var fechaHoraCita = fecha.ToDateTime(hora);
+            var ahoraDominicana = GetDominicanNow();
+            var diferencia = fechaHoraCita - ahoraDominicana;
+
+            return $"Cita: {fechaHoraCita:dd/MM/yyyy HH:mm} | " +
+                   $"Ahora RD: {ahoraDominicana:dd/MM/yyyy HH:mm} | " +
+                   $"Diferencia: {diferencia.TotalMinutes:F0} min | " +
+                   $"Estado: {GetEstadoCita(fecha, hora)}";
         }
     }
 }

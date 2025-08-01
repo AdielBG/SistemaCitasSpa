@@ -1,0 +1,56 @@
+﻿@using SistemaCitasSpa.Utils
+@model IEnumerable<SistemaCitasSpa.Models.Citum>
+@{
+    ViewData["Title"] = "Debug - Lista de Citas";
+}
+
+<h1 class="text-center mb-4">Debug - Lista de Citas</h1>
+
+<div class="alert alert-warning">
+    <strong>Información de Debug:</strong><br>
+    Hora actual RD: @DateTimeUtils.GetDominicanNow().ToString("dd/MM/yyyy HH:mm:ss")<br>
+    Zona horaria: Atlantic Standard Time (AST)
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay citas registradas.</div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Fecha/Hora Cita</th>
+                <th>Tiempo Restante</th>
+                <th>Estado</th>
+                <th>Info Debug</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cita in Model)
+            {
+                <tr>
+                    <td>@cita.CitaID</td>
+                    <td>
+                        @cita.Fecha.ToString("dd/MM/yyyy") @cita.Hora.ToString("HH:mm")
+                    </td>
+                    <td>@cita.TiempoRestanteFormateado</td>
+                    <td>
+                        <span class="badge bg-@cita.BadgeClass">
+                            @cita.Estado
+                        </span>
+                    </td>
+                    <td>
+                        <small>@DateTimeUtils.GetDebugInfo(cita.Fecha, cita.Hora)</small>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-primary">Volver a Vista Normal</a>
+</div>

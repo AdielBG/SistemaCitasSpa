@@ -323,5 +323,16 @@ namespace SistemaCitasSpa.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Debug()
+        {
+            var citas = _context.Cita
+                .Include(c => c.Paciente)
+                .Include(c => c.Servicio)
+                .Include(c => c.Terapeuta)
+                .ToList();
+            return View("Debug", citas); // Usar la vista de debug
+        }
+
     }
 }
