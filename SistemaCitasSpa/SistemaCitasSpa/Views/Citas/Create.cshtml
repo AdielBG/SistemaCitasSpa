@@ -6,19 +6,30 @@
 
 <h1 class="mb-4">Registrar Cita</h1>
 
+<div class="alert alert-info">
+    <i class="fas fa-clock"></i> <strong>Zona horaria:</strong> Atlantic Standard Time (AST) - República Dominicana
+    <br><small>Hora actual: <span id="currentTime"></span></small>
+</div>
+
 @if (!string.IsNullOrEmpty(ViewBag.Error))
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
+    <div class="alert alert-danger">
+        @ViewBag.Error
+    </div>
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.ValidationErrors))
 {
-    <div class="alert alert-warning">@ViewBag.ValidationErrors</div>
+    <div class="alert alert-warning">
+        @ViewBag.ValidationErrors
+    </div>
 }
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
 }
 
 <form asp-action="Create" method="post" class="needs-validation" novalidate>
@@ -79,14 +90,29 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="Fecha" class="form-label">Fecha:</label>
-            @Html.TextBoxFor(model => model.Fecha, new { @type = "date", @class = "form-control", @required = "required" })
+            @Html.TextBoxFor(model => model.Fecha, new {
+            @type = "date",
+                        @class = "form-control",
+                        @required = "required",
+                        @id = "fechaCita"
+                        })
             @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
         </div>
 
         <div class="col-md-6">
             <label for="Hora" class="form-label">Hora:</label>
-            @Html.TextBoxFor(model => model.Hora, new { @type = "time", @class = "form-control", @required = "required" })
+            @Html.TextBoxFor(model => model.Hora, new {
+                        @type = "time",
+                        @class = "form-control",
+                        @required = "required",
+                        @id = "horaCita",
+                        @min = "07:00",
+                        @max = "20:00"
+                        })
             @Html.ValidationMessageFor(model => model.Hora, "", new { @class = "text-danger" })
+            <small class="form-text text-muted">
+                Horario de atención: 7:00 AM - 8:00 PM | Domingos cerrado
+            </small>
         </div>
     </div>
 
@@ -100,6 +126,27 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Mostrar la hora actual de República Dominicana
+        function updateCurrentTime() {
+            const now = new Date();
+            // AST es UTC-4
+            const dominicanTime = new Date(now.getTime() - (4 * 60 * 60 * 1000));
+            document.getElementById('currentTime').textContent =
+                dominicanTime.toLocaleString('es-DO', {
+                    timeZone: 'America/Santo_Domingo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+        }
+
+        // Actualizar cada segundo
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
         document.querySelector('form').addEventListener('submit', function(e) {
             console.log('Formulario enviado');
 

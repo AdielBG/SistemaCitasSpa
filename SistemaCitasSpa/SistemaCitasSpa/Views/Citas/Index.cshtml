@@ -33,28 +33,34 @@
     <a asp-action="ExportarCSV" class="btn btn-dark">Exportar CSV</a>
 </p>
 
+<table class="table table-striped table-bordered">
+    <thead class="table-dark text-center">
+        <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Servicio</th>
+            <th>Terapeuta</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Duración</th>
+            <th>Tiempo restante</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No hay citas registradas.</div>
+
+    <tr>
+        <td colspan="10" class="text-center">No hay citas registradas.</td>
+    </tr>
+    @* <div class="alert alert-info">No hay citas registradas.</div> *@
 }
 else
 {
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark text-center">
-            <tr>
-                <th>ID</th>
-                <th>Paciente</th>
-                <th>Servicio</th>
-                <th>Terapeuta</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Duración</th>
-                <th>Tiempo restante</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+    
             @foreach (var cita in Model)
             {
                 var estado = DateTimeUtils.GetEstadoCita(cita.Fecha, cita.Hora);
@@ -81,9 +87,12 @@ else
                     </td>
                 </tr>
             }
+            
+        }
+
         </tbody>
     </table>
-}
+
 
 @section Scripts {
     <script>

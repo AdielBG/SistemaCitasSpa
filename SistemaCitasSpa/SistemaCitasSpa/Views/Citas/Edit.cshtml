@@ -6,31 +6,81 @@
 
 <h2 class="text-center mb-4">Editar Información de la Cita</h2>
 
+<div class="alert alert-info">
+    <i class="fas fa-clock"></i> <strong>Zona horaria:</strong> Atlantic Standard Time (AST) - República Dominicana
+    <br><small>Hora actual: <span id="currentTime"></span></small>
+</div>
+
 @if (ViewBag.Error != null)
 {
     <div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<form asp-action="Edit" method="post" class="card p-4 shadow-sm">
+@if (!string.IsNullOrEmpty(ViewBag.ValidationErrors))
+{
+    <div class="alert alert-warning">
+        @ViewBag.ValidationErrors
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<form asp-action="Edit" method="post" class="card p-4 shadow-sm needs-validation" novalidate>
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+    {
+        @Html.ValidationSummary(false, "Por favor, corrija los siguientes errores:", new { @class = "alert alert-danger" })
+    }
 
     <input type="hidden" name="CitaID" value="@Model.CitaID" />
 
     <div class="row mb-3">
         <div class="col-md-4">
             <label for="PacienteID" class="form-label">Paciente:</label>
-            @Html.DropDownListFor(model => model.PacienteID, (SelectList)ViewBag.PacienteID, "Seleccione un paciente", new { @class = "form-select", required = "required" })
+            @if (ViewBag.PacienteID != null)
+            {
+                @Html.DropDownListFor(model => model.PacienteID, (SelectList)ViewBag.PacienteID, "Seleccione un paciente", new { @class = "form-select", required = "required" })
+            }
+            else
+            {
+                <select name="PacienteID" class="form-select" disabled>
+                    <option>Error al cargar pacientes</option>
+                </select>
+            }
             @Html.ValidationMessageFor(model => model.PacienteID, "", new { @class = "text-danger" })
         </div>
         <div class="col-md-4">
             <label for="ServicioID" class="form-label">Servicio:</label>
-            @Html.DropDownListFor(model => model.ServicioID, (SelectList)ViewBag.ServicioID, "Seleccione un servicio", new { @class = "form-select", required = "required" })
+            @if (ViewBag.ServicioID != null)
+            {
+                @Html.DropDownListFor(model => model.ServicioID, (SelectList)ViewBag.ServicioID, "Seleccione un servicio", new { @class = "form-select", required = "required" })
+            }
+            else
+            {
+                <select name="ServicioID" class="form-select" disabled>
+                    <option>Error al cargar servicios</option>
+                </select>
+            }
             @Html.ValidationMessageFor(model => model.ServicioID, "", new { @class = "text-danger" })
         </div>
         <div class="col-md-4">
             <label for="TerapeutaID" class="form-label">Terapeuta:</label>
-            @Html.DropDownListFor(model => model.TerapeutaID, (SelectList)ViewBag.TerapeutaID, "Seleccione un terapeuta", new { @class = "form-select", required = "required" })
+            @if (ViewBag.TerapeutaID != null)
+            {
+                @Html.DropDownListFor(model => model.TerapeutaID, (SelectList)ViewBag.TerapeutaID, "Seleccione un terapeuta", new { @class = "form-select", required = "required" })
+            }
+            else
+            {
+                <select name="TerapeutaID" class="form-select" disabled>
+                    <option>Error al cargar terapeutas</option>
+                </select>
+            }
             @Html.ValidationMessageFor(model => model.TerapeutaID, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -38,13 +88,18 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="Fecha" class="form-label">Fecha de la cita:</label>
-            <input type="date" name="Fecha" class="form-control" value="@Model.Fecha.ToString("yyyy-MM-dd")" required />
+            <input type="date" name="Fecha" class="form-control" value="@Model.Fecha.ToString("yyyy-MM-dd")"
+                   required id="fechaCita" />
             @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
         </div>
         <div class="col-md-6">
             <label for="Hora" class="form-label">Hora de la cita:</label>
-            <input type="time" name="Hora" class="form-control" value="@Model.Hora.ToString("hh\\:mm")" required />
+            <input type="time" name="Hora" class="form-control" value="@Model.Hora.ToString("hh\\:mm")"
+                   required id="horaCita" min="07:00" max="20:00" />
             @Html.ValidationMessageFor(model => model.Hora, "", new { @class = "text-danger" })
+            <small class="form-text text-muted">
+                Horario de atención: 7:00 AM - 8:00 PM | Domingos cerrado
+            </small>
         </div>
     </div>
 
@@ -68,3 +123,56 @@
         <a href="/Citas/Index" class="btn btn-secondary ms-2">Cancelar</a>
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Mostrar la hora actual de República Dominicana
+        function updateCurrentTime() {
+            const now = new Date();
+            // AST es UTC-4
+            const dominicanTime = new Date(now.getTime() - (4 * 60 * 60 * 1000));
+            document.getElementById('currentTime').textContent =
+                dominicanTime.toLocaleString('es-DO', {
+                    timeZone: 'America/Santo_Domingo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+        }
+
+        // Actualizar cada segundo
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Formulario de edición enviado');
+
+            // Verificar los valores del formulario
+            const formData = new FormData(this);
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + value);
+            }
+
+            // Verificar si hay errores de validación HTML5
+            const inputs = this.querySelectorAll('input, select');
+            let hasErrors = false;
+            inputs.forEach(input => {
+                if (!input.checkValidity()) {
+                    console.log('Error en:', input.name, input.validationMessage);
+                    hasErrors = true;
+                }
+            });
+
+            if (hasErrors) {
+                console.log('Hay errores de validación HTML5');
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+}
